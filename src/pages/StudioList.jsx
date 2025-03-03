@@ -118,7 +118,7 @@ const StudioList = () => {
     setRadius(10000);
     setLocationError(false);
     setFilteredStudios(studios);
-  }
+  };
 
   return (
     <>
@@ -158,30 +158,24 @@ const StudioList = () => {
             )}
           </div>
 
-            {/* Radius Search */}
-            <div className="flex space-x-2">
-              <select
-                dafaultvalue={radius}
-                onChange={(e) => setRadius(Number(e.target.value) * 1000)}
-                className="border p-2 rounded bg-white"
-              >
-                <option value={10}>10 km</option>
-                <option value={20}>20 km</option>
-                <option value={30}>30 km</option>
-              </select>
-              <button
-                onClick={handleSearchByRadius}
-                className="btn btn-primary"
-              >
-                {loadingLocation ? "Locating..." : "Search by Radius"}
-              </button>
-              <button
-                onClick={handleReset}
-                className="btn btn-outline"
-              >
-                Reset
-              </button>
-            </div>
+          {/* Radius Search */}
+          <div className="flex space-x-2">
+            <select
+              value={radius / 1000}
+              onChange={(e) => setRadius(Number(e.target.value) * 1000)}
+              className="border p-2 rounded bg-white"
+            >
+              <option value={10}>10 km</option>
+              <option value={20}>20 km</option>
+              <option value={30}>30 km</option>
+            </select>
+            <button onClick={handleSearchByRadius} className="btn btn-primary">
+              {loadingLocation ? "Locating..." : "Search by Radius"}
+            </button>
+            <button onClick={handleReset} className="btn btn-outline">
+              Reset
+            </button>
+          </div>
         </div>
 
         {/* Studio Listings */}
