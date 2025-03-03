@@ -130,9 +130,9 @@ const StudioList = () => {
           Available Studios
         </h1>
 
-        <div className="flex items-center gap-4 justify-between">
+        <div className="flex items-center gap-3 justify-end flex-wrap mb-6">
           {/* Search Input with Auto-Complete */}
-          <div className="relative my-4 flex-1">
+          <div className="relative flex-1 min-w-52">
             <input
               type="text"
               placeholder="Search by location..."
@@ -158,9 +158,8 @@ const StudioList = () => {
             )}
           </div>
 
-          <div>
             {/* Radius Search */}
-            <div className="flex space-x-2 my-4">
+            <div className="flex space-x-2">
               <select
                 dafaultvalue={radius}
                 onChange={(e) => setRadius(Number(e.target.value) * 1000)}
@@ -183,14 +182,13 @@ const StudioList = () => {
                 Reset
               </button>
             </div>
-          </div>
         </div>
 
         {/* Studio Listings */}
         {loading ? (
           <Loading />
         ) : (
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
             {filteredStudios.length > 0 ? (
               filteredStudios.map((studio) => (
                 <StudioCard key={studio.Id} studio={studio} />
