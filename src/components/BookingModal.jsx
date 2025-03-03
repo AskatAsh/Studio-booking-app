@@ -40,7 +40,7 @@ const BookingModal = ({ studio, close }) => {
   const timeSlots = generateTimeSlots();
 
   const onSubmit = (data) => {
-    const booking = { ...data, studio: studio.Name };
+    const booking = { ...data, studio: studio.Name, type: studio.Type, city: studio.Location.City, area: studio.Location.Area };
     const selectedSlot = `${data.date} ${data.time}`;
 
     if (bookings.some((b) => `${b.date} ${b.time}` === selectedSlot)) {

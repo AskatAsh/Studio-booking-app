@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 const BookingList = () => {
   const [bookings, setBookings] = useState([]);
@@ -20,26 +21,28 @@ const BookingList = () => {
         </h1>
         {bookings.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-md">
+            <table className="table">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="p-3 border">Name</th>
-                  <th className="p-3 border">Email</th>
-                  <th className="p-3 border">Studio Type</th>
-                  <th className="p-3 border">Location</th>
-                  <th className="p-3 border">Date & Time</th>
+                  <th>NO.</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Studio Type</th>
+                  <th>Location</th>
+                  <th>Date & Time</th>
                 </tr>
               </thead>
               <tbody>
                 {bookings.map((booking, index) => (
-                  <tr key={index} className="text-center border-t">
-                    <td className="p-3 border">{booking.name}</td>
-                    <td className="p-3 border">{booking.email}</td>
-                    <td className="p-3 border">{booking.type}</td>
-                    <td className="p-3 border">
-                      {booking.Location?.City}, {booking.Location?.Area}
+                  <tr key={index} className="hover:bg-base-300">
+                    <td>{index+1}</td>
+                    <td>{booking.name}</td>
+                    <td>{booking.email}</td>
+                    <td>{booking.type}</td>
+                    <td>
+                      {booking?.area}, {booking?.city}
                     </td>
-                    <td className="p-3 border">
+                    <td>
                       {booking.date} {booking.time}
                     </td>
                   </tr>
@@ -48,7 +51,12 @@ const BookingList = () => {
             </table>
           </div>
         ) : (
-          <p className="text-center text-gray-500">No bookings available.</p>
+          <div className="text-center">
+            <p className="text-gray-500 mb-6">No bookings available.</p>
+            <Link to="/studiolist" className="btn btn-primary px-8 mx-auto">
+              See Studio List
+            </Link>
+          </div>
         )}
       </div>
     </>
