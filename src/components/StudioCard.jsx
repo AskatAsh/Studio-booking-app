@@ -12,7 +12,10 @@ const StudioCard = ({ studio }) => {
       <h2 className="text-xl font-bold mb-1">{studio?.Name}</h2>
       <p>{studio?.Type}</p>
       <p className="flex gap-2 items-start">
-        <FaLocationDot size={16} className="my-1" /> {studio?.Location?.Address}
+        <FaLocationDot size={16} className="my-1" /> {studio?.Location?.Area}, {studio?.Location?.City}
+      </p>
+      <p className="flex gap-2 items-start">
+        Address: {studio?.Location?.Address}
       </p>
       <p className="flex items-center gap-1 flex-wrap">
         {studio?.Amenities.map((amenity, idx) => (
@@ -30,7 +33,7 @@ const StudioCard = ({ studio }) => {
           {studio?.Rating} / 5 <FaStar className="text-yellow-500 ml-2" />
         </p>
       </div>
-      <div className="flex-1 flex items-end">
+      <div className="flex-1 flex items-end mt-2">
         <button
           className="btn btn-primary w-full"
           onClick={() => setIsOpen(true)}
