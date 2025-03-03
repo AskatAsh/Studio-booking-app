@@ -85,7 +85,7 @@ const StudioList = () => {
           placeholder="Search by location..."
           value={searchTerm}
           onChange={handleSearch}
-          className="border border-gray-300 p-2 w-full rounded"
+          className="border border-gray-300 p-2 w-full rounded bg-white"
         />
         {/* Auto-Suggestions Dropdown */}
         {showSuggestions && searchTerm && (
