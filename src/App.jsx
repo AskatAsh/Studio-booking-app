@@ -1,11 +1,18 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+  },
+]);
 
 function App() {
 
   return (
     <>
-
-      <h1>Studio Booking</h1>
-
+      <RouterProvider router={router} />
     </>
   )
 }
