@@ -104,7 +104,7 @@ const StudioList = () => {
         );
       },
       (error) => {
-        console.log(error);
+        console.log(error.message);
         setLoadingLocation(false);
         setLocationError(
           "Location access denied. Please enable location services."
