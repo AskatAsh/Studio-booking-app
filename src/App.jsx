@@ -3,6 +3,7 @@ import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import StudioList from "./pages/StudioList";
 import BookingList from "./pages/BookingList";
+import { HelmetProvider } from "react-helmet-async";
 
 const router = createBrowserRouter([
   {
@@ -11,27 +12,28 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/studiolist",
-        element: <StudioList />
+        element: <StudioList />,
       },
       {
         path: "/bookinglist",
-        element: <BookingList />
+        element: <BookingList />,
       },
-    ]
+    ],
   },
 ]);
 
 function App() {
-
   return (
     <>
-      <RouterProvider router={router} />
+      <HelmetProvider>
+        <RouterProvider router={router} />
+      </HelmetProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
