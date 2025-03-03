@@ -81,10 +81,12 @@ const BookingModal = ({ studio, close }) => {
           />
           {errors.time && <p className="text-red-500">{errors.time.message}</p>}
 
-          {/* Buttons */}
+          {/* Confirm button */}
           <button type="submit" className="btn btn-success w-full">
             Confirm Booking
           </button>
+
+          {/* Cancel button */}
           <button
             type="button"
             onClick={close}
