@@ -125,7 +125,7 @@ const StudioList = () => {
       <Helmet>
         <title>Studio List</title>
       </Helmet>
-      <div className="max-w-7xl w-11/12 mx-auto p-4">
+      <div className="max-w-7xl w-11/12 mx-auto p-4 mb-16">
         <h1 className="text-3xl font-bold text-gray-800 my-8">
           Available Studios
         </h1>
