@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
 
 const BookingModal = ({ studio, close }) => {
   const {
@@ -8,28 +9,58 @@ const BookingModal = ({ studio, close }) => {
     formState: { errors },
   } = useForm();
 
-  // stop scrolling when the model opens
+  const [bookings, setBookings] = useState([]);
+  const { Open, Close } = studio.Availability;
+
+  // Stop scrolling when the modal opens
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    const storedBookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    setBookings(storedBookings);
 
     return () => {
       document.body.style.overflow = "auto";
     };
   }, []);
 
+  // genrate time slots based on open and closing time
+  const generateTimeSlots = () => {
+    const slots = [];
+    let startTime = new Date(`2000-01-01T${Open}`);
+    const endTime = new Date(`2000-01-01T${Close}`);
+
+    while (startTime < endTime) {
+      const timeString = startTime.toTimeString().slice(0, 5);
+      slots.push(timeString);
+      startTime.setMinutes(startTime.getMinutes() + 30);
+    }
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
+
   const onSubmit = (data) => {
     const booking = { ...data, studio: studio.Name };
+    const selectedSlot = `${data.date} ${data.time}`;
 
-    // Store in localStorage
-    const existingBookings = JSON.parse(
-      localStorage.getItem("bookings") || "[]"
-    );
-    localStorage.setItem(
-      "bookings",
-      JSON.stringify([...existingBookings, booking])
-    );
+    if (bookings.some((b) => `${b.date} ${b.time}` === selectedSlot)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "The selected time slot is not available. Please choose another time.",
+      });
+      return;
+    }
 
-    alert("Booking Confirmed!");
+    const newBookings = [...bookings, booking];
+    setBookings(newBookings);
+    localStorage.setItem("bookings", JSON.stringify(newBookings));
+
+    Swal.fire({
+      icon: "success",
+      title: "Booking Successful",
+      text: `Booking confirmed at: ${selectedSlot}`,
+    });
     close();
   };
 
@@ -74,11 +105,21 @@ const BookingModal = ({ studio, close }) => {
           {errors.date && <p className="text-red-500">{errors.date.message}</p>}
 
           {/* Time */}
-          <input
+          <select
             {...register("time", { required: "Time is required" })}
-            type="time"
             className="w-full border p-2 rounded"
-          />
+          >
+            <option value="">Select a time slot</option>
+            {timeSlots.map((slot) => (
+              <option
+                key={slot}
+                value={slot}
+                disabled={bookings.some((booking) => booking.time === slot)}
+              >
+                {slot} {bookings.some((booking) => booking.time === slot) ? "(Booked)" : ""}
+              </option>
+            ))}
+          </select>
           {errors.time && <p className="text-red-500">{errors.time.message}</p>}
 
           {/* Confirm button */}
