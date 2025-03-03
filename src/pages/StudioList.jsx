@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import getStudios from "../api/studioData";
 import StudioCard from "../components/StudioCard";
 import Loading from "../components/Loading";
+import { getDistance } from "geolib";
 
 const StudioList = () => {
   const [studios, setStudios] = useState([]);
@@ -12,6 +13,9 @@ const StudioList = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [radius, setRadius] = useState(10000);
+  const [locationError, setLocationError] = useState("");
+  const [loadingLocation, setLoadingLocation] = useState(false);
 
   useEffect(() => {
     getStudios().then((data) => {
@@ -68,6 +72,54 @@ const StudioList = () => {
     setShowSuggestions(false);
   };
 
+  const handleSearchByRadius = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setLoadingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLoadingLocation(false);
+        const { latitude, longitude } = position.coords;
+
+        // Filter studios within the radius
+        const nearbyStudios = studios.filter((studio) => {
+          const distance = getDistance(
+            { latitude, longitude },
+            {
+              latitude: studio?.Location?.Coordinates?.Latitude,
+              longitude: studio?.Location?.Coordinates?.Longitude,
+            }
+          );
+          return distance <= radius;
+        });
+
+        setFilteredStudios(nearbyStudios);
+        setLocationError(
+          nearbyStudios.length
+            ? ""
+            : `No studios found within ${radius / 1000}KM.`
+        );
+      },
+      (error) => {
+        console.log(error);
+        setLoadingLocation(false);
+        setLocationError(
+          "Location access denied. Please enable location services."
+        );
+      }
+    );
+  };
+
+  const handleReset = () => {
+    setSearchTerm("");
+    setRadius(10000);
+    setLocationError(false);
+    setFilteredStudios(studios);
+  }
+
   return (
     <>
       <Helmet>
@@ -78,32 +130,61 @@ const StudioList = () => {
           Available Studios
         </h1>
 
-        {/* Search Input with Auto-Complete */}
-      <div className="relative my-4">
-        <input
-          type="text"
-          placeholder="Search by location..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="border border-gray-300 p-2 w-full rounded bg-white"
-        />
-        {/* Auto-Suggestions Dropdown */}
-        {showSuggestions && searchTerm && (
-          <ul className="absolute left-0 right-0 bg-white border border-gray-400 mt-1 rounded shadow-lg z-10">
-            {suggestions
-              .filter((area) => area.startsWith(searchTerm))
-              .map((area, index) => (
-                <li
-                  key={index}
-                  className="p-2 cursor-pointer hover:bg-gray-200"
-                  onClick={() => handleSelectSuggestion(area)}
-                >
-                  {area}
-                </li>
-              ))}
-          </ul>
-        )}
-      </div>
+        <div className="flex items-center gap-4 justify-between">
+          {/* Search Input with Auto-Complete */}
+          <div className="relative my-4 flex-1">
+            <input
+              type="text"
+              placeholder="Search by location..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="border border-gray-300 p-2 w-full rounded bg-white"
+            />
+            {/* Auto-Suggestions Dropdown */}
+            {showSuggestions && searchTerm && (
+              <ul className="absolute left-0 right-0 bg-white border border-gray-400 mt-1 rounded shadow-lg z-10">
+                {suggestions
+                  .filter((area) => area.startsWith(searchTerm))
+                  .map((area, index) => (
+                    <li
+                      key={index}
+                      className="p-2 cursor-pointer hover:bg-gray-200"
+                      onClick={() => handleSelectSuggestion(area)}
+                    >
+                      {area}
+                    </li>
+                  ))}
+              </ul>
+            )}
+          </div>
+
+          <div>
+            {/* Radius Search */}
+            <div className="flex space-x-2 my-4">
+              <select
+                dafaultvalue={radius}
+                onChange={(e) => setRadius(Number(e.target.value) * 1000)}
+                className="border p-2 rounded bg-white"
+              >
+                <option value={10}>10 km</option>
+                <option value={20}>20 km</option>
+                <option value={30}>30 km</option>
+              </select>
+              <button
+                onClick={handleSearchByRadius}
+                className="btn btn-primary"
+              >
+                {loadingLocation ? "Locating..." : "Search by Radius"}
+              </button>
+              <button
+                onClick={handleReset}
+                className="btn btn-outline"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Studio Listings */}
         {loading ? (
@@ -115,7 +196,13 @@ const StudioList = () => {
                 <StudioCard key={studio.Id} studio={studio} />
               ))
             ) : (
-              <p className="text-red-500">No studios found.</p>
+              <>
+                {locationError ? (
+                  <p className="text-red-500">{locationError}</p>
+                ) : (
+                  <p className="text-red-500">No studios found.</p>
+                )}
+              </>
             )}
           </div>
         )}
